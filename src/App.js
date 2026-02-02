@@ -8,7 +8,7 @@ import LoadingBar from 'react-top-loading-bar';
 function App() {
   const pageSize = 6;
   const country = "in"; // Define country variable
-  const apiKey = "9bc2225317837600fa21813e38c5f326"; // Read API key from environment variable
+  const apiKey = "b782d0f56ceb7d0cfbab87e5c2e88584"; // Read API key from environment variable
   const [progress, setProgress] = useState(0);
 
   return (
