@@ -15,7 +15,7 @@ const News = (props) => {
   const fetchNews = useCallback(async (page) => {
     setProgress(10); // Start the loading bar
     try {
-      const url = `https://gnews.io/api/v4/top-headlines?category=${category}&lang=en&country=in&max=10&apikey=${apiKey}&page=${page}`;
+      const url = `/api/v4/top-headlines?category=${category}&lang=en&country=in&max=10&apikey=${apiKey}&page=${page}`;
       const response = await fetch(url);
       setProgress(30); // Update the progress bar
       const data = await response.json();
