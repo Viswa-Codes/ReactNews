@@ -12,25 +12,36 @@ const News = (props) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchNews = useCallback(async (page) => {
-    setProgress(10); // Start the loading bar
-    try {
-      const url = `/api/v4/top-headlines?category=${category}&lang=en&country=in&max=10&apikey=${apiKey}&page=${page}`;
-      const response = await fetch(url);
-      setProgress(30); // Update the progress bar
-      const data = await response.json();
-      setProgress(70); // Update the progress bar
-      if (data.articles.length === 0) {
-        setHasMore(false);
-      } else {
-        setArticles((prevArticles) => (page === 1 ? data.articles : [...prevArticles, ...data.articles]));
-      }
-      setProgress(100); // Complete the loading bar
-    } catch (error) {
-      console.error("Error fetching news:", error);
-      setProgress(100); // Complete the loading bar on error
+const fetchNews = useCallback(async (page) => {
+  setProgress(10);
+  try {
+    const url = `/api/v4/top-headlines?category=${category}&lang=en&country=in&max=10&apikey=${apiKey}&page=${page}`;
+    const response = await fetch(url);
+    setProgress(30);
+
+    // CRITICAL: Check if response is OK before parsing JSON
+    if (!response.ok) {
+      const errorText = await response.text(); 
+      console.error("Server returned non-JSON response (likely a 404 HTML page):", errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  }, [category, apiKey, setProgress]);
+
+    const data = await response.json();
+    setProgress(70);
+
+    // Safety check for data.articles
+    if (!data.articles || data.articles.length === 0) {
+      setHasMore(false);
+    } else {
+      setArticles((prevArticles) => (page === 1 ? data.articles : [...prevArticles, ...data.articles]));
+    }
+    setProgress(100);
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    setHasMore(false); // Stop infinite scroll if there's an error
+    setProgress(100);
+  }
+}, [category, apiKey, setProgress]);
 
   useEffect(() => {
     setArticles([]);
